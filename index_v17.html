@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>モンスト反射線ガイド v16</title>
+<style>*{box-sizing:border-box}
+:root{color-scheme:dark}
+body{margin:0;background:#090b10;color:#f5f7fb;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif}
+header{position:sticky;top:0;z-index:5;background:rgba(13,16,23,.96);backdrop-filter:blur(14px);padding:8px 10px;border-bottom:1px solid #252b36;box-shadow:0 3px 14px rgba(0,0,0,.22)}
+.title{display:flex;justify-content:space-between;align-items:center;gap:8px}.title h1{font-size:15px;margin:0;letter-spacing:.01em}.ver{font-size:10px;padding:3px 6px;border-radius:999px;background:#202735;color:#9edcff;border:1px solid #354154}
+#wrap{position:relative;display:flex;justify-content:center;padding:0;background:#05070a;overflow:hidden}
+canvas{display:block;max-width:100%;height:auto;background:#222;touch-action:none;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+#dock{position:absolute;left:50%;top:calc(69% + 6px);bottom:0;transform:translateX(-50%);width:min(100%,710px);padding:7px 8px 9px;background:rgba(9,12,18,.94);backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,.12);border-bottom:1px solid rgba(255,255,255,.08);box-shadow:0 -8px 22px rgba(0,0,0,.32);z-index:4}
+.toolbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.toolbar button,.toolbar label{min-height:34px}
+button,label.btn{display:flex;align-items:center;justify-content:center;background:#1b2029;color:#fff;border:1px solid #3a4351;border-radius:8px;padding:6px 5px;font-size:11px;font-weight:600;cursor:pointer}button:active,label.btn:active{transform:scale(.98)}.toolbar .primary{background:#155f98;border-color:#3aa8ef}
+input[type=file]{display:none}
+.controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-top:5px}.control{background:rgba(20,25,34,.94);border:1px solid #252d39;border-radius:8px;padding:5px 7px;font-size:10px;color:#cbd2dc}.control .top{display:flex;justify-content:space-between;gap:5px;margin-bottom:3px}.control b{color:#fff;font-size:11px}.control input{width:100%;margin:0;accent-color:#4db9ff}
+.status{font-size:9px;color:#9aa5b4;margin-top:4px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#info{max-width:710px;margin:0 auto;padding:8px 10px 12px;background:#0f131a;color:#aeb7c5;font-size:10px;line-height:1.5}.legend{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px}.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 6px;border-radius:6px;background:#171d27;border:1px solid #293241}.dot{width:7px;height:7px;border-radius:50%;display:inline-block}.red{background:#ff4646}.yellow{background:#ffe45c}.cyan{background:#36d8ff}.help{margin-top:5px;padding:7px;border-radius:7px;background:#141922;border:1px solid #252d39}.help strong{color:#fff}
+@media(max-width:520px){.toolbar{grid-template-columns:repeat(4,1fr)}.toolbar button,.toolbar label{font-size:10px;padding:5px 2px}.controls{grid-template-columns:1fr 1fr 1fr}.control{padding:4px 5px}.status{font-size:8px}}
+
+/* v16 controls: full-width vertical sliders with easy +/- buttons */
+#dock{
+  background:#0b0f16;
+}
+.controls{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:6px !important;
+  margin-top:6px !important;
+}
+.control.control-full{
+  width:100%;
+  padding:7px 9px;
+}
+.slider-line{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.slider-line input[type="range"]{
+  flex:1 1 auto;
+  width:auto !important;
+  min-width:0;
+  height:28px;
+}
+.stepper{
+  display:flex;
+  flex:0 0 auto;
+  gap:5px;
+}
+.stepper button{
+  width:42px;
+  height:36px;
+  padding:0;
+  border-radius:9px;
+  font-size:21px;
+  font-weight:700;
+  line-height:1;
+  background:#222a35;
+  border:1px solid #465264;
+}
+.stepper button:active{transform:scale(.94);background:#303a49}
+@media(max-width:520px){
+  #dock{padding:7px 8px calc(10px + env(safe-area-inset-bottom));}
+  .toolbar{grid-template-columns:repeat(4,1fr)}
+  .controls{gap:5px !important}
+  .control.control-full{padding:6px 8px}
+  .stepper button{width:40px;height:36px}
+}
+
+
+/* v16: compact controls */
+#dock{background:#0b0f16}
+.controls{display:flex!important;flex-direction:column!important;gap:5px!important;margin-top:5px!important}
+.control.control-full{width:100%;padding:6px 8px}
+.slider-line{display:flex;align-items:center;gap:8px}
+.slider-line input[type="range"]{flex:1 1 auto;width:auto!important;min-width:0;height:28px}
+.stepper{display:flex;flex:0 0 auto;gap:5px}
+.stepper button{width:40px;height:34px;padding:0;border-radius:8px;font-size:20px;font-weight:700;line-height:1;background:#222a35;border:1px solid #465264}
+.stepper button:active{transform:scale(.94);background:#303a49}
+@media(max-width:520px){
+  #dock{padding:5px 8px calc(7px + env(safe-area-inset-bottom))}
+  .controls{gap:4px!important}
+  .control.control-full{padding:5px 7px}
+  .stepper button{width:40px;height:34px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="title"><h1>モンスト反射線ガイド</h1><span class="ver">v16 大型アップデート</span></div>
+</header>
+
+<div id="wrap">
+  <canvas id="cv"></canvas>
+  <div id="dock">
+    <div class="toolbar">
+      <label class="btn">📷 読込<input id="file" type="file" accept="image/*"></label>
+      <button id="lock" class="primary">① 円を合わせる</button>
+      <button id="showWall">壁枠 ON</button>
+      <button id="save">💾 保存</button>
+    </div>
+    <div class="controls">
+      <div class="control control-full">
+        <div class="top"><span>円径</span><b><span id="dv">110</span>px</b></div>
+        <div class="slider-line"><input id="diam" type="range" min="40" max="160" step="2" value="110"><div class="stepper"><button type="button" id="diamMinus">−</button><button type="button" id="diamPlus">＋</button></div></div>
+      </div>
+      <div class="control control-full">
+        <div class="top"><span>進行方向 反射回数</span><b><span id="bv">4</span>回</b></div>
+        <div class="slider-line"><input id="bounces" type="range" min="0" max="20" step="1" value="4"><div class="stepper"><button type="button" id="bounceMinus">−</button><button type="button" id="bouncePlus">＋</button></div></div>
+      </div>
+      <div class="control control-full">
+        <div class="top"><span>逆方向 反射回数</span><b><span id="rv">0</span>回</b></div>
+        <div class="slider-line"><input id="reverseBounces" type="range" min="0" max="20" step="1" value="0"><div class="stepper"><button type="button" id="reverseMinus">−</button><button type="button" id="reversePlus">＋</button></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="info">
+  <div class="legend"><span class="badge"><i class="dot red"></i>進行・反射軌道</span><span class="badge"><i class="dot yellow"></i>逆方向</span><span class="badge"><i class="dot cyan"></i>固定壁</span></div>
+  <div class="help"><strong>操作：</strong>円をキャラに合わせて位置固定。固定後は画面のどこをタップしても、その点を擬似的なキャラ中心として360°角度調整できます。モンストと同じく、引っ張った方向の逆が進行方向です。</div>
+  <div class="help"><strong>壁際対策：</strong>最初の壁まで実線を表示し、壁判定を越えた先約1cmは点線で補助表示。逆方向も同様に黄色で表示します。</div>
+</div>
+
+<script>
+const BASE_W=710, BASE_H=1536;
+// 今回の2枚の実測：壁に接触した「六角形中心」を中心座標として固定。
+// 左下：左壁≈34, 下壁≈1034 / 右上：右壁≈676, 上壁≈296
+const WALL={L:34,R:676,T:296,B:1030};
+
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const file=document.getElementById('file');
+const lockBtn=document.getElementById('lock');
+const place=document.getElementById('lock');
+const showWall=document.getElementById('showWall');
+const save=document.getElementById('save');
+const bounces=document.getElementById('bounces');
+const reverseBounces=document.getElementById('reverseBounces');
+const diam=document.getElementById('diam');
+const bv=document.getElementById('bv'),rv=document.getElementById('rv'),dv=document.getElementById('dv'),lv=document.getElementById('lv');
+
+let img=null, W=BASE_W,H=BASE_H;
+let sx=1,sy=1;
+let ball={x:355,y:700,r:55};
+let aim={x:500,y:700};
+let pullPoint={x:155,y:700};
+// 引っ張り操作用の「擬似キャラ中心」。最初に画面をタップした点を固定し、
+// その点を中心に指を動かした角度を、実キャラの発射角として使う。
+let aimAnchor={x:155,y:700};
+let dragging=null;
+let showWalls=true;
+let locked=false;
+let touchPreview=null;
+const TOUCH_OFFSET_CSS=126;
+function getTouchOffsetY(){
+  const r=cv.getBoundingClientRect();
+  return TOUCH_OFFSET_CSS*BASE_H/r.height;
+}
+
+function fitCanvas(){
+  const maxW=Math.min(window.innerWidth-20,BASE_W);
+  const ratio=BASE_H/BASE_W;
+  cv.style.width=maxW+'px';
+  cv.style.height=(maxW*ratio)+'px';
+  sx=cv.width/BASE_W; sy=cv.height/BASE_H;
+}
+
+function resizeCanvas(){
+  cv.width=BASE_W; cv.height=BASE_H; fitCanvas(); draw();
+}
+window.addEventListener('resize',fitCanvas);
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  if(img){
+    ctx.drawImage(img,0,0,W,H);
+  }else{
+    ctx.fillStyle='#251f1b';ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#777';ctx.font='24px sans-serif';ctx.textAlign='center';
+    ctx.fillText('スクリーンショットを読み込んでください',W/2,H/2);
+  }
+
+  if(showWalls){
+    ctx.save();
+    ctx.strokeStyle='rgba(0,220,255,.9)';
+    ctx.lineWidth=3;
+    ctx.setLineDash([12,8]);
+    ctx.strokeRect(WALL.L,WALL.T,WALL.R-WALL.L,WALL.B-WALL.T);
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(0,220,255,.95)';
+    ctx.font='bold 18px sans-serif';
+    ctx.textAlign='left';
+    ctx.fillText('固定壁',WALL.L+8,WALL.T-10);
+    ctx.restore();
+  }
+
+  if(locked) drawGuide();
+  if(!locked) drawPlacementUI();
+}
+
+function drawPlacementUI(){
+  ctx.save();
+  ctx.strokeStyle='#ff315d'; ctx.lineWidth=4;
+  ctx.fillStyle='rgba(255,49,93,.10)';
+  ctx.beginPath(); ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#ff315d';
+  ctx.beginPath(); ctx.arc(ball.x,ball.y,4,0,Math.PI*2); ctx.fill();
+
+  if(touchPreview){
+    ctx.strokeStyle='rgba(255,255,255,.75)';
+    ctx.lineWidth=2; ctx.setLineDash([5,5]);
+    ctx.beginPath(); ctx.moveTo(touchPreview.x,touchPreview.y); ctx.lineTo(ball.x,ball.y); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(255,255,255,.9)';
+    ctx.beginPath(); ctx.arc(touchPreview.x,touchPreview.y,6,0,Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawGuide(){
+  // 固定後は画面のどこからでも指を置いて引っ張れる。
+  // 指の位置（pullPoint）を基準に、反対方向を進行方向にする。
+  const rawDx=aim.x-ball.x, rawDy=aim.y-ball.y;
+  const rawD=Math.hypot(rawDx,rawDy)||1;
+  const ux=rawDx/rawD, uy=rawDy/rawD;
+  // 軌道
+  const bounceCount=Number(bounces.value);
+  const autoLen=Math.max(3000,2500*(bounceCount+1));
+  const p=trace(ball.x,ball.y,aim.x,aim.y,bounceCount,autoLen);
+  ctx.save();
+  ctx.strokeStyle='rgba(255,70,70,.95)';
+  ctx.lineWidth=5;
+  ctx.lineCap='round';
+  ctx.shadowColor='rgba(0,0,0,.7)';
+  ctx.shadowBlur=4;
+  ctx.beginPath();
+  ctx.moveTo(p[0].x,p[0].y);
+  for(let i=1;i<p.length;i++)ctx.lineTo(p[i].x,p[i].y);
+  ctx.stroke();
+  ctx.restore();
+
+  // 最初の壁を越えた先を約1cmだけ点線で延長（反射線とは別の補助表示）
+  const firstRed=firstWallHit(ball.x,ball.y,ux,uy);
+  if(firstRed){ drawBeyondWall(firstRed.x,firstRed.y,ux,uy,'#ff4646'); }
+
+  // 反射点
+  ctx.fillStyle='#fff';
+  for(let i=1;i<p.length-1;i++){
+    ctx.beginPath();ctx.arc(p[i].x,p[i].y,5,0,Math.PI*2);ctx.fill();
+  }
+
+  // キャラ円
+  ctx.save();
+  ctx.strokeStyle='#ff315d';ctx.lineWidth=4;
+  ctx.fillStyle='rgba(255,49,93,.10)';
+  ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#ff315d';
+  ctx.beginPath();ctx.arc(ball.x,ball.y,4,0,Math.PI*2);ctx.fill();
+  ctx.restore();
+
+  // モンスト式の感覚：最初にタップした「擬似キャラ中心」を固定し、
+  // そこから指を引っ張った方向の逆を進行方向にする。
+  // 逆方向：常に黄色。反射回数0なら従来通り「最初の壁まで」。
+  // 1以上なら壁で反射しながら黄色い軌道を伸ばす。
+  const reverseCount=Number(reverseBounces.value);
+  const back=firstWallHit(ball.x,ball.y,-ux,-uy);
+  if(reverseCount===0){
+    if(back){
+      ctx.save();
+      ctx.strokeStyle='#ffe45c';ctx.lineWidth=4;ctx.lineCap='round';
+      ctx.beginPath();ctx.moveTo(ball.x,ball.y);ctx.lineTo(back.x,back.y);ctx.stroke();
+      ctx.restore();
+      drawBeyondWall(back.x,back.y,-ux,-uy,'#ffe45c');
+    }
+  }else{
+    const reverseAutoLen=Math.max(3000,2500*(reverseCount+1));
+    const rp=trace(ball.x,ball.y,ball.x-ux,ball.y-uy,reverseCount,reverseAutoLen);
+    ctx.save();
+    ctx.strokeStyle='#ffe45c';ctx.lineWidth=4;ctx.lineCap='round';
+    ctx.shadowColor='rgba(0,0,0,.7)';ctx.shadowBlur=4;
+    ctx.beginPath();ctx.moveTo(rp[0].x,rp[0].y);
+    for(let i=1;i<rp.length;i++)ctx.lineTo(rp[i].x,rp[i].y);
+    ctx.stroke();ctx.restore();
+
+    if(back) drawBeyondWall(back.x,back.y,-ux,-uy,'#ffe45c');
+    ctx.fillStyle='#fff';
+    for(let i=1;i<rp.length-1;i++){
+      ctx.beginPath();ctx.arc(rp[i].x,rp[i].y,5,0,Math.PI*2);ctx.fill();
+    }
+  }
+}
+
+function drawBeyondWall(x,y,dx,dy,color){
+  // 最初の直線だけ壁の外へ点線延長。
+  // 左右壁は画面端まで、上下壁は約2cm（基準座標で100px）。
+  const hitLeft = Math.abs(x-WALL.L)<1e-4;
+  const hitRight = Math.abs(x-WALL.R)<1e-4;
+
+  let ex,ey;
+  if(hitLeft || hitRight){
+    const t = dx>1e-9 ? (W-x)/dx : (dx<-1e-9 ? (0-x)/dx : 0);
+    if(t<=0)return;
+    ex=x+dx*t;
+    ey=y+dy*t;
+  }else{
+    const twoCm=100;
+    ex=x+dx*twoCm;
+    ey=y+dy*twoCm;
+  }
+
+  ctx.save();
+  ctx.strokeStyle=color;
+  ctx.lineWidth=3;
+  ctx.lineCap='round';
+  ctx.setLineDash([7,8]);
+  ctx.beginPath();
+  ctx.moveTo(x,y);
+  ctx.lineTo(ex,ey);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.restore();
+}
+function firstWallHit(x,y,dx,dy){
+  const hits=[];
+  if(dx>1e-9) hits.push((WALL.R-x)/dx);
+  if(dx<-1e-9) hits.push((WALL.L-x)/dx);
+  if(dy>1e-9) hits.push((WALL.B-y)/dy);
+  if(dy<-1e-9) hits.push((WALL.T-y)/dy);
+  const t=Math.min(...hits.filter(v=>v>1e-7));
+  if(!isFinite(t)) return null;
+  return {x:x+dx*t,y:y+dy*t};
+}
+
+function trace(x,y,ax,ay,n,maxLen){
+  let dx=ax-x,dy=ay-y,d=Math.hypot(dx,dy);
+  if(d<1)return [{x,y}];
+  dx/=d;dy/=d;
+  let remain=maxLen, pts=[{x,y}], px=x,py=y;
+  for(let b=0;b<=n && remain>0;b++){
+    let tx=Infinity,ty=Infinity,hitX=null,hitY=null;
+    if(dx>1e-9){tx=(WALL.R-px)/dx;hitX='R'}
+    else if(dx<-1e-9){tx=(WALL.L-px)/dx;hitX='L'}
+    if(dy>1e-9){ty=(WALL.B-py)/dy;hitY='B'}
+    else if(dy<-1e-9){ty=(WALL.T-py)/dy;hitY='T'}
+
+    let t=Infinity;
+    if(tx>1e-7)t=Math.min(t,tx);
+    if(ty>1e-7)t=Math.min(t,ty);
+
+    if(!isFinite(t) || t>=remain){
+      pts.push({x:px+dx*remain,y:py+dy*remain});
+      break;
+    }
+    px+=dx*t;py+=dy*t;remain-=t;
+    pts.push({x:px,y:py});
+
+    const eps=1e-7;
+    const hitXwall=Math.abs(px-WALL.L)<1e-4||Math.abs(px-WALL.R)<1e-4;
+    const hitYwall=Math.abs(py-WALL.T)<1e-4||Math.abs(py-WALL.B)<1e-4;
+    if(hitXwall)dx=-dx;
+    if(hitYwall)dy=-dy;
+    if(!hitXwall&&!hitYwall)break;
+    px+=dx*eps;py+=dy*eps;
+  }
+  return pts;
+}
+
+function posFromEvent(e){
+  const r=cv.getBoundingClientRect();
+  return {x:(e.clientX-r.left)*BASE_W/r.width,y:(e.clientY-r.top)*BASE_H/r.height};
+}
+function down(e){
+  e.preventDefault();
+  const p=posFromEvent(e);
+  const d=Math.hypot(p.x-ball.x,p.y-ball.y);
+  // 位置固定後は画面のどこからでも操作可能。
+  // 最初にタップした点を「擬似的なキャラクター中心」として固定し、
+  // そこを基準に指を360°動かして角度を決める。
+  if(locked){
+    dragging='aim';
+    aimAnchor.x=p.x;
+    aimAnchor.y=p.y;
+    pullPoint.x=p.x;
+    pullPoint.y=p.y;
+    // 初期タップ位置とキャラ中心を結ぶ方向を暫定角度にする。
+    let dx=aimAnchor.x-p.x,dy=aimAnchor.y-p.y;
+    if(Math.hypot(dx,dy)<1){
+      dx=ball.x-p.x; dy=ball.y-p.y;
+    }
+    aim.x=ball.x+dx;
+    aim.y=ball.y+dy;
+  }else if(d<=ball.r+25){
+    dragging='ball';
+  }else{
+    dragging='ball';
+  }
+  cv.setPointerCapture?.(e.pointerId);
+  move(e);
+}
+function move(e){
+  if(!dragging)return;
+  e.preventDefault();
+  const p=posFromEvent(e);
+  if(dragging==='ball'){
+    // キャラクター中心は壁の内側ならどこでも置ける。円の半径分まで内側へ制限しない。
+    ball.x=Math.max(WALL.L,Math.min(WALL.R,p.x));
+    ball.y=Math.max(WALL.T,Math.min(WALL.B,p.y-getTouchOffsetY()));
+    // 発射方向も同じベクトルを維持
+    const dx=aim.x-ball.x,dy=aim.y-ball.y;
+    if(Math.hypot(dx,dy)<5){aim.x=ball.x+100;aim.y=ball.y}
+  }else{
+    // 最初のタップ位置（擬似キャラ中心）から見た現在の指位置を使う。
+    // 指を中心から外へ引っ張った方向の逆が進行方向。
+    const dx=aimAnchor.x-p.x;
+    const dy=aimAnchor.y-p.y;
+    if(Math.hypot(dx,dy)>1){
+      aim.x=ball.x+dx;
+      aim.y=ball.y+dy;
+    }
+    pullPoint.x=p.x;
+    pullPoint.y=p.y;
+  }
+  draw();
+}
+function up(){dragging=null}
+
+cv.addEventListener('pointerdown',down);
+cv.addEventListener('pointermove',move);
+cv.addEventListener('pointerup',up);
+cv.addEventListener('pointercancel',up);
+
+file.addEventListener('change',e=>{
+  const f=e.target.files?.[0];
+  if(!f)return;
+  const u=URL.createObjectURL(f);
+  const im=new Image();
+  im.onload=()=>{
+    img=im;
+    // スクショは常にゲーム画面の基準比率へ描画。壁座標は710x1536基準で固定。
+    locked=false;
+    dragging=null;
+    touchPreview=null;
+    lockBtn.textContent='① 円を合わせる';
+    lockBtn.classList.remove('locked');
+    draw();
+    URL.revokeObjectURL(u);
+  };
+  im.onerror=()=>{
+    URL.revokeObjectURL(u);
+    alert('スクリーンショットを読み込めませんでした。もう一度選択してください。');
+  };
+  im.src=u;
+});
+
+place.onclick=()=>{place.classList.add('active')};
+lockBtn.onclick=()=>{
+  locked=!locked;
+  if(locked){
+    aim.x=ball.x+200; aim.y=ball.y;
+    pullPoint.x=ball.x-200; pullPoint.y=ball.y;
+    lockBtn.textContent='② 位置固定中（タップで解除）';
+    lockBtn.classList.add('locked');
+  }else{
+    lockBtn.textContent='① 円を合わせる';
+    lockBtn.classList.remove('locked');
+  }
+  draw();
+};
+
+showWall.onclick=()=>{showWalls=!showWalls;showWall.textContent='壁枠 '+(showWalls?'ON':'OFF');draw()};
+function clampSlider(el,value){
+  const min=Number(el.min),max=Number(el.max),step=Number(el.step)||1;
+  let v=Math.max(min,Math.min(max,value));
+  v=Math.round((v-min)/step)*step+min;
+  v=Math.max(min,Math.min(max,v));
+  el.value=v;
+  el.dispatchEvent(new Event('input',{bubbles:true}));
+}
+function wireStep(idMinus,idPlus,el,step){
+  document.getElementById(idMinus).onclick=()=>clampSlider(el,Number(el.value)-step);
+  document.getElementById(idPlus).onclick=()=>clampSlider(el,Number(el.value)+step);
+}
+bounces.oninput=()=>{bv.textContent=bounces.value;draw()};
+reverseBounces.oninput=()=>{rv.textContent=reverseBounces.value;draw()};
+diam.oninput=()=>{ball.r=Number(diam.value)/2;dv.textContent=diam.value;draw()};
+
+wireStep('diamMinus','diamPlus',diam,2);
+wireStep('bounceMinus','bouncePlus',bounces,1);
+wireStep('reverseMinus','reversePlus',reverseBounces,1);
+
+save.onclick=()=>{
+  const a=document.createElement('a');
+  a.download='monst-reflection-guide-v16.png';
+  a.href=cv.toDataURL('image/png');
+  a.click();
+};
+
+resizeCanvas();
+</script>
+</body>
+</html>
